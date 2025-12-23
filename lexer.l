@@ -1,31 +1,39 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "ast.h"
-#include "parser.tab.h" // Includes tokens defined in Bison
+#include "parser.tab.h"
 %}
 
 %option noyywrap
 
 %%
 
-[ \t\n]     ; // Ignore spaces, tabs, and newlines
+[ \t\n]     ; // Ignore whitespace
+
+"var"       { return VAR; }
 
 [0-9]+      { 
-    // Found a number! Convert text to integer and send to Bison
     yylval = createIntNode(atoi(yytext));
     return INTEGER; 
+}
+
+[a-zA-Z][a-zA-Z0-9]* { 
+    // Found a variable name!
+    // We create a generic node to hold the name string
+    yylval = createNode(NODE_VAR, NULL, NULL);
+    yylval->varName = strdup(yytext); 
+    return IDENTIFIER; 
 }
 
 "+"         { return PLUS; }
 "-"         { return MINUS; }
 "*"         { return MULT; }
 "/"         { return DIV; }
+"="         { return ASSIGN; }
 ";"         { return SEMICOLON; }
 
-.           { 
-    printf("Syntax Error: Unknown character: %s\n", yytext); 
-    exit(1); 
-}
+.           { printf("Unknown character: %s\n", yytext); exit(1); }
 
 %%
