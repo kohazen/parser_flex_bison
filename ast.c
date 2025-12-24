@@ -4,6 +4,8 @@
 #include "ast.h"
 
 /* ===== Symbol Table (Global, Simple) ===== */
+/* Version 1: Arithmetic evaluation supported */
+
 #define MAX_VARS 128
 
 typedef struct {
