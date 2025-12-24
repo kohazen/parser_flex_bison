@@ -9,7 +9,7 @@ int yylex();
 void yyerror(const char* s);
 %}
 
-#define YYSTYPE ASTNode*
+%define api.value.type {ASTNode*}
 
 %token INTEGER IDENTIFIER VAR
 %token IF ELSE WHILE
@@ -49,11 +49,11 @@ block:
 
 variable_decl:
     VAR IDENTIFIER ASSIGN expression SEMICOLON {
-        $$ = createNode(NODE_ASSIGN, $4, NULL); 
+        $$ = createNode(NODE_DECL, $4, NULL);
         $$->varName = $2->varName;
     }
     | VAR IDENTIFIER SEMICOLON {
-        $$ = createNode(NODE_ASSIGN, createIntNode(0), NULL);
+        $$ = createNode(NODE_DECL, createIntNode(0), NULL);
         $$->varName = $2->varName;
     }
     ;
@@ -71,7 +71,7 @@ if_statement:
     }
     | IF LPAREN expression RPAREN statement ELSE statement {
         $$ = createNode(NODE_IF, $3, $5);
-        $$->next = $7;
+        $$->extra = $7;
     }
     ;
 

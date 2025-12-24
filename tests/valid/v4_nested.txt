@@ -1,0 +1,10 @@
+var i = 0;
+var sum = 0;
+while (i < 5) {
+    if (i > 2) {
+        sum = sum + i * 2;
+    } else {
+        sum = sum + i;
+    }
+    i = i + 1;
+}
