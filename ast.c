@@ -150,7 +150,12 @@ int eval(ASTNode *n) {
 			        case OP_ADD: return l + r;
 			        case OP_SUB: return l - r;
 			        case OP_MUL: return l * r;
-			        case OP_DIV: return l / r;
+					case OP_DIV:
+					    if (r == 0) {
+					        printf("Runtime Error: division by zero\n");
+					        exit(1);
+					    }
+					    return l / r;
 
 			        case OP_LT:  return l < r;
 			        case OP_GT:  return l > r;
@@ -176,12 +181,13 @@ int eval(ASTNode *n) {
         return v;
     }
 
-    case NODE_IF:
-        if (eval(n->left))
-            eval(n->right);
-        else
-            eval(n->extra);
-        return 0;
+	case NODE_IF:
+	    if (eval(n->left))
+	        eval(n->right);
+	    else if (n->extra)
+	        eval(n->extra);
+	    return 0;
+   
 
     case NODE_WHILE:
         while (eval(n->left))
