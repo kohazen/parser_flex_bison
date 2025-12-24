@@ -6,6 +6,8 @@
 /* ===== Symbol Table (Global, Simple) ===== */
 /* Version 1: Arithmetic evaluation supported */
 /* Version 2: Variable declaration, assignment, and lookup supported */
+/* Version 3: Control flow (if/else, while) and comparisons supported */
+
 
 
 #define MAX_VARS 128
@@ -142,21 +144,20 @@ int eval(ASTNode *n) {
         return get_var(n->name);
 
 		case NODE_OP: {
-		    int l = eval(n->left);
-		    int r = eval(n->right);
+			int l = eval(n->left);
+			    int r = eval(n->right);
+			switch (n->value) {
+			        case OP_ADD: return l + r;
+			        case OP_SUB: return l - r;
+			        case OP_MUL: return l * r;
+			        case OP_DIV: return l / r;
 
-		    switch (n->value) {
-		        case OP_ADD: return l + r;
-		        case OP_SUB: return l - r;
-		        case OP_MUL: return l * r;
-		        case OP_DIV: return l / r;
-
-		        case OP_LT:  return l < r;
-		        case OP_GT:  return l > r;
-		        case OP_LE:  return l <= r;
-		        case OP_GE:  return l >= r;
-		        case OP_EQ:  return l == r;
-		        case OP_NE:  return l != r;
+			        case OP_LT:  return l < r;
+			        case OP_GT:  return l > r;
+			        case OP_LE:  return l <= r;
+			        case OP_GE:  return l >= r;
+			        case OP_EQ:  return l == r;
+			        case OP_NE:  return l != r;
 		    }
 		
     }
