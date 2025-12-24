@@ -4,13 +4,19 @@
 #include <string.h>
 #include "ast.h"
 #include "parser.tab.h"
+
+// Keep track of line numbers for error reporting
+int yylineno = 1;
 %}
 
 %option noyywrap
 
 %%
 
-[ \t\n]     ; // Ignore whitespace
+[ \t]       ; // Ignore spaces and tabs (but not newlines yet)
+\n          { yylineno++; } // Count lines
+
+"//".* ; // Rule: Ignore everything after // until the end of the line
 
 "var"       { return VAR; }
 "if"        { return IF; }
@@ -44,6 +50,10 @@
 "("         { return LPAREN; }
 ")"         { return RPAREN; }
 
-.           { printf("Unknown character: %s\n", yytext); exit(1); }
+.           { 
+    // Better error message with line number
+    printf("Lexical Error at line %d: Unknown character '%s'\n", yylineno, yytext); 
+    exit(1); 
+}
 
 %%

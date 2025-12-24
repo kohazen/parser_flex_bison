@@ -4,20 +4,19 @@
 #include "ast.h"
 
 extern ASTNode* root;
+extern int yylineno; // Get line number from Lexer
 int yylex();
 void yyerror(const char* s);
 %}
 
 #define YYSTYPE ASTNode*
 
-// Tokens
 %token INTEGER IDENTIFIER VAR
 %token IF ELSE WHILE
 %token PLUS MINUS MULT DIV ASSIGN SEMICOLON
 %token EQ NEQ LT GT
 %token LBRACE RBRACE LPAREN RPAREN
 
-// Operator Precedence (Comparisons < Math < Multiplication)
 %left EQ NEQ LT GT
 %left PLUS MINUS
 %left MULT DIV
@@ -31,7 +30,6 @@ program:
 statement_list:
     statement { $$ = $1; }
     | statement_list statement {
-        // Link statements together so they run in order
         $$ = createNode(NODE_SEQ, $1, $2);
     }
     ;
@@ -69,11 +67,9 @@ assignment:
 
 if_statement:
     IF LPAREN expression RPAREN statement {
-        // Create IF node: Left=Condition, Right=TrueBlock
         $$ = createNode(NODE_IF, $3, $5);
     }
     | IF LPAREN expression RPAREN statement ELSE statement {
-        // Create IF node: Left=Condition, Right=TrueBlock, Next=ElseBlock
         $$ = createNode(NODE_IF, $3, $5);
         $$->next = $7;
     }
@@ -81,7 +77,6 @@ if_statement:
 
 while_statement:
     WHILE LPAREN expression RPAREN statement {
-        // Create WHILE node: Left=Condition, Right=LoopBody
         $$ = createNode(NODE_WHILE, $3, $5);
     }
     ;
@@ -105,5 +100,5 @@ expression:
 %%
 
 void yyerror(const char* s) {
-    fprintf(stderr, "Error: %s\n", s);
+    fprintf(stderr, "Syntax Error at line %d: %s\n", yylineno, s);
 }
